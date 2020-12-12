@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using D6TReader.Controller;
 
 namespace D6TReader.UserControls
 {
@@ -49,6 +50,21 @@ namespace D6TReader.UserControls
             this.SizeChanged += ArrayPanelGroup_SizeChanged;
         }
 
+        public void Attach(FrameSequencer sequencer)
+        {
+            sequencer.OnNewFrame += Sequencer_OnNewFrame;
+        }
+
+        public void Dettach(FrameSequencer sequencer)
+        {
+            sequencer.OnNewFrame -= Sequencer_OnNewFrame;
+        }
+
+        private void Sequencer_OnNewFrame(object sender, float[] e)
+        {
+            SetValues(e);
+        }
+
         public void SetSize(int x, int y)
         {
             XTileCount = x;
@@ -71,7 +87,7 @@ namespace D6TReader.UserControls
             {
                 //err
             }
-            
+
             float avg = values.Average();
             for (int i = 0; i < values.Count(); i++)
             {
@@ -81,11 +97,11 @@ namespace D6TReader.UserControls
                 {
                     action(panels[i], values[i], avg);
                 }
-                catch 
+                catch
                 {
 
                 }
-                
+
             }
             _currentValues = values;
         }
@@ -136,9 +152,9 @@ namespace D6TReader.UserControls
                 panel.Color = difference > Sensitivity ? Color.Red : Color.White;
             }
 
-            public static void Umbral(DisplayPanel panel , float value , float avg)
+            public static void Umbral(DisplayPanel panel, float value, float avg)
             {
-                int red = (int) map(value, LowUmbral, HighUmbral, 0, 255);
+                int red = (int)map(value, LowUmbral, HighUmbral, 0, 255);
                 int blue = (int)map(value, HighUmbral, LowUmbral, 0, 255);
                 Color color = Color.FromArgb(red, 0, blue);
                 panel.Text = $"{value: 0.00}";

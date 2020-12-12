@@ -12,6 +12,8 @@ namespace D6TReader.Controller
         SerialPort _port;
         private TaskCompletionSource<IEnumerable<float>> DataReceived;
         private event EventHandler OnLineReceived;
+        public event EventHandler<IEnumerable<float>> OnDataRead;
+        bool dataReceived = true;
         string buffer;
         bool _isDisposed;
 
@@ -62,13 +64,20 @@ namespace D6TReader.Controller
             }
         }
 
-        public async Task< IEnumerable<float> > GetData()
+        public async Task<IEnumerable<float> > GetData()
         {
-            DataReceived = new TaskCompletionSource<IEnumerable<float>>();
             _port.Write("r");
-
-
-            return await DataReceived.Task;
+            if(!dataReceived)
+            {
+                return null;
+            }
+            dataReceived = false;
+            DataReceived = new TaskCompletionSource<IEnumerable<float>>();
+            
+            var result = await DataReceived.Task;
+            dataReceived = true;
+            OnDataRead?.Invoke(this, result);
+            return result;
         }
     }
 }

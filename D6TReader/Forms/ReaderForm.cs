@@ -19,6 +19,9 @@ namespace D6TReader.Forms
     public partial class ReaderForm : Form
     {
         Controller.D6TReader _reader;
+        Controller.FrameSequencer _sequencer;
+        Controller.HeatMapAnalizer _analizer;
+        HeatMapWriter heatMapWriter;
         Stream _fileStream;
         StreamWriter _writer;
         bool _canWrite = false;
@@ -31,8 +34,16 @@ namespace D6TReader.Forms
         public ReaderForm(SerialPort port) : this()
         {
             _reader = new Controller.D6TReader(port);
+            _sequencer = new FrameSequencer(_reader, 6);
+            _analizer = new HeatMapAnalizer(16, 12);
+            
 
+            a_panel.Attach(_sequencer);
+            _analizer.Attach(_sequencer);
+            
         }
+
+        
 
         public void UpdateRecord()
         {
@@ -52,7 +63,7 @@ namespace D6TReader.Forms
         private void ReaderForm_Load(object sender, EventArgs e)
         {
             a_panel.SetSize(4, 4);
-
+            _sequencer.Start();
         }
 
         private async void SerialTimer_Tick(object sender, EventArgs e)
@@ -81,19 +92,23 @@ namespace D6TReader.Forms
             UpdateRecord();
         }
 
-        private void StartRec()
+        private async void StartRec()
         {
             Stream st = DataController.SaveFile();
             if (st != null)
             {
                 _writer = new StreamWriter(st);
-                _canWrite = true;
+                heatMapWriter = new HeatMapWriter(_writer);
+                heatMapWriter.Attach(_sequencer);
+                await Task.Run(async () => heatMapWriter.Start());
             }
         }
 
         private void StopRec()
         {
-            _canWrite = false;
+            heatMapWriter.Dettach(_sequencer);
+            heatMapWriter.Stop();
+            heatMapWriter = null;
             _writer.Dispose();
             _writer = null;
         }

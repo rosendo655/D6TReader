@@ -40,7 +40,7 @@ namespace D6TReader.Forms
             cb_port.Items.Clear();
             cb_port.Items.AddRange(Controller.SerialController.Ports().ToArray());
 
-            tb_baudRate.Text = "19200";
+            tb_baudRate.Text = "9600";
         }
         
         private void Accept()

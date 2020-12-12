@@ -76,6 +76,9 @@
   <ItemGroup>
     <Compile Include="Controller\D6TReader.cs" />
     <Compile Include="Controller\DataController.cs" />
+    <Compile Include="Controller\FrameSequencer.cs" />
+    <Compile Include="Controller\HeatMapAnalizer.cs" />
+    <Compile Include="Controller\HeatMapWriter.cs" />
     <Compile Include="Controller\SerialController.cs" />
     <Compile Include="Controller\SerialPortExtensions.cs" />
     <Compile Include="Control\FunctionExtensions.cs" />

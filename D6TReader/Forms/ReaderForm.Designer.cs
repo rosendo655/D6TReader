@@ -54,7 +54,6 @@
             // 
             // SerialTimer
             // 
-            this.SerialTimer.Enabled = true;
             this.SerialTimer.Tick += new System.EventHandler(this.SerialTimer_Tick);
             // 
             // b_grabar
@@ -106,7 +105,6 @@
             // 
             // tstb_sensibilidad
             // 
-            this.tstb_sensibilidad.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.tstb_sensibilidad.Name = "tstb_sensibilidad";
             this.tstb_sensibilidad.Size = new System.Drawing.Size(100, 23);
             this.tstb_sensibilidad.Text = "0.8";
@@ -139,7 +137,6 @@
             // 
             // tstb_desde
             // 
-            this.tstb_desde.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.tstb_desde.Name = "tstb_desde";
             this.tstb_desde.Size = new System.Drawing.Size(100, 23);
             this.tstb_desde.Text = "0";
@@ -155,7 +152,6 @@
             // 
             // tstb_hasta
             // 
-            this.tstb_hasta.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.tstb_hasta.Name = "tstb_hasta";
             this.tstb_hasta.Size = new System.Drawing.Size(100, 23);
             this.tstb_hasta.Text = "70";
