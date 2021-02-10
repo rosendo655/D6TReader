@@ -24,7 +24,6 @@ namespace D6TReader.Controller
             timer.Interval = FPSDelay;
             timer.Enabled = true;
             timer.Tick += Timer_Tick;
-
         }
 
         public void Start()
@@ -39,11 +38,13 @@ namespace D6TReader.Controller
 
         private async void Timer_Tick(object sender, EventArgs e)
         {
+            //timer.Stop();
             var data = await reader.GetData();
             if (data != null)
             {
                 OnNewFrame?.Invoke(this, data.ToArray());
             }
+            //timer.Start();
         }
     }
 }

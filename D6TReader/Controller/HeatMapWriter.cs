@@ -1,11 +1,12 @@
-﻿using System;
+﻿using D6TReader.Controller;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace D6TReader.Controller
+namespace D6TReader.FallDetection
 {
     public class HeatMapWriter
     {

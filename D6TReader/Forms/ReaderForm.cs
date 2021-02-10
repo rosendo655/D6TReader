@@ -1,4 +1,5 @@
 ﻿using D6TReader.Controller;
+using D6TReader.FallDetection;
 using D6TReader.UserControls;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Drawing;
 using System.IO;
 using System.IO.Ports;
 using System.Linq;
+using System.Media;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -20,7 +22,7 @@ namespace D6TReader.Forms
     {
         Controller.D6TReader _reader;
         Controller.FrameSequencer _sequencer;
-        Controller.HeatMapAnalizer _analizer;
+        HeatMapAnalizer _analizer;
         HeatMapWriter heatMapWriter;
         Stream _fileStream;
         StreamWriter _writer;
@@ -34,16 +36,54 @@ namespace D6TReader.Forms
         public ReaderForm(SerialPort port) : this()
         {
             _reader = new Controller.D6TReader(port);
-            _sequencer = new FrameSequencer(_reader, 6);
-            _analizer = new HeatMapAnalizer(16, 12);
-            
+            _sequencer = new FrameSequencer(_reader, 18);
+            _analizer = new HeatMapAnalizer(16, 12,
+                    new FrameAnalizeOptions(
+                        standzones: new[] { new[] { 0, 4, 8 }, new[] { 1, 5, 9 }, new[] { 2, 6, 10 }, new[] { 3, 7, 11 } },
+                        fallzones: new[] { new[] { 12, 13, 14 , 15},/* new[] { 13, 14, 15 } */},
+                        allzone: new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 }
+                        
+                        
+                        //,heatTransferThreshold: 0.1f
+                        //,heatAverageThreshold: 1.5f
+                        //,deltaThreshold: 1.0f
+
+                        )
+
+                );
+
+            _analizer.OnFrameResult += _analizer_OnFrameResult;
+
 
             a_panel.Attach(_sequencer);
             _analizer.Attach(_sequencer);
-            
+
         }
 
-        
+        private DateTime lastDetected = DateTime.Now;
+        private void _analizer_OnFrameResult(object sender, FrameAnalizeResult[,] e)
+        {
+            foreach (var res in e)
+            {
+                if (res == FrameAnalizeResult.FALL)
+                {
+                    if (DateTime.Now - lastDetected > TimeSpan.FromSeconds(1.5))
+                    {
+                        lastDetected = DateTime.Now;
+                        lv_caidas_registradas.Items.Add(DateTime.Now.ToString("G"));
+                        SoundPlayer simpleSound = new SoundPlayer(@"c:\Windows\Media\chimes.wav");
+                        simpleSound.Play();
+                    }
+                }
+            }
+        }
+
+        private void _analizer_OnFall(object sender, EventArgs e)
+        {
+            lv_caidas_registradas.Items.Add(DateTime.Now.ToString("G"));
+            SoundPlayer simpleSound = new SoundPlayer(@"c:\Windows\Media\chimes.wav");
+            simpleSound.Play();
+        }
 
         public void UpdateRecord()
         {
@@ -74,7 +114,7 @@ namespace D6TReader.Forms
 
             if (_canWrite)
             {
-                Control.FunctionExtensions.Try(() => Write(data), ex => Console.WriteLine(ex.Message) );
+                Control.FunctionExtensions.Try(() => Write(data), ex => Console.WriteLine(ex.Message));
             }
         }
 
@@ -141,7 +181,7 @@ namespace D6TReader.Forms
 
         private void tstb_sensibilidad_TextChanged(object sender, EventArgs e)
         {
-            if(ValidateInput(tstb_sensibilidad.Text))
+            if (ValidateInput(tstb_sensibilidad.Text))
             {
                 ArrayPanelGroup.ArrayPanelDisplayActions.Sensitivity = float.Parse(tstb_sensibilidad.Text);
             }

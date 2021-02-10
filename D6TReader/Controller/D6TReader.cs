@@ -64,7 +64,7 @@ namespace D6TReader.Controller
             }
         }
 
-        public async Task<IEnumerable<float> > GetData()
+        public async Task<IEnumerable<float>> GetData()
         {
             _port.Write("r");
             if(!dataReceived)
