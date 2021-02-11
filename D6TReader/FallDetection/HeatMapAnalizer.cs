@@ -33,7 +33,7 @@ namespace D6TReader.FallDetection
         public float SumDifference(int[] zone)
             => Calc(zone, cells => cells.Sum(s => s.TemperatureDifference));
 
-
+        //dado una zona [] y una funcion para calcular un flotante a partir de una coleccion de heatcells
         private float Calc(int[] zone, Func<IEnumerable<HeatCell>, float> calcFunction)
             => calcFunction(zone.Select(z => cells[z]));
 
@@ -99,6 +99,8 @@ namespace D6TReader.FallDetection
             return results;
         }
 
+
+        //algoritmo original
         private FrameAnalizeResult AnalizeFrame
             (
             int[] startZone,
@@ -168,38 +170,45 @@ namespace D6TReader.FallDetection
             return result;
         }
 
+
+        //Algoritmo equivalente
         private bool AnalizarTransicion
             (
             int[] zonaInicio,
             int[] zonaFinal,
             int[] zonaReferencia,
             float rangoTransferenciaCalor = 0.20f,
-            float heatAverageThreshold = 1.0f,
-            float deltaThreshold = 0.4f
+            float temperaturaMinima = 1.0f,
+            float deltaMinimo = 0.4f
             )
         {
+
+            //calculo de deltas promedio de zona
             float deltaReferencia = AvgDelta(zonaReferencia);
             float deltaInicio = AvgDelta(zonaInicio);
             float deltaFinal = AvgDelta(zonaFinal);
 
+            //calculo de promedio de temperaturas de zona
             float promedioReferencia = AvgTemp(zonaReferencia);
             float promedioInicio = AvgTemp(zonaInicio);
             float promedioFinal = AvgTemp(zonaFinal);
 
             
-            if (promedioInicio < (promedioReferencia + heatAverageThreshold) && (promedioReferencia + heatAverageThreshold) < promedioFinal)
+            if (promedioInicio < (promedioReferencia + temperaturaMinima) && (promedioReferencia + temperaturaMinima) < promedioFinal)
             {
-                if (deltaInicio <= (-deltaThreshold) && deltaFinal >= deltaThreshold)
+                if (deltaInicio <= (-deltaMinimo) && deltaFinal >= deltaMinimo)
                 {
                     // la zona de caida es mas caliente
                     if (deltaInicio < deltaReferencia && deltaReferencia < deltaFinal)
                     {
                         // si la zona stand hubo una transicion negativa y en la fall hubo una positiva
                         float porcentajeTransferenciaCalor = deltaInicio / (deltaFinal == 0 ? 0.0001f : deltaFinal);
+
                         if (porcentajeTransferenciaCalor < 0)
                         {
                             //hubo transicion inversa
                             float porcentajeTransferenciaAbsoluto = Math.Abs(porcentajeTransferenciaCalor);
+
                             if ((1.0f - rangoTransferenciaCalor) <= porcentajeTransferenciaAbsoluto && porcentajeTransferenciaAbsoluto <= (1.0f + rangoTransferenciaCalor))
                             {
                                 //se transfirio la mayoria del calor
