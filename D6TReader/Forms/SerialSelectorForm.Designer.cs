@@ -34,11 +34,13 @@
             this.label2 = new System.Windows.Forms.Label();
             this.tb_baudRate = new System.Windows.Forms.TextBox();
             this.b_open = new System.Windows.Forms.Button();
+            this.ws_button = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btn_accept
             // 
-            this.btn_accept.Location = new System.Drawing.Point(16, 187);
+            this.btn_accept.Location = new System.Drawing.Point(15, 216);
             this.btn_accept.Name = "btn_accept";
             this.btn_accept.Size = new System.Drawing.Size(227, 23);
             this.btn_accept.TabIndex = 0;
@@ -89,11 +91,34 @@
             this.b_open.UseVisualStyleBackColor = true;
             this.b_open.Click += new System.EventHandler(this.b_open_Click);
             // 
+            // ws_button
+            // 
+            this.ws_button.Location = new System.Drawing.Point(16, 162);
+            this.ws_button.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ws_button.Name = "ws_button";
+            this.ws_button.Size = new System.Drawing.Size(226, 19);
+            this.ws_button.TabIndex = 6;
+            this.ws_button.Text = "WebSocket";
+            this.ws_button.UseVisualStyleBackColor = true;
+            this.ws_button.Click += new System.EventHandler(this.ws_button_Click);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(16, 187);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(227, 23);
+            this.button1.TabIndex = 7;
+            this.button1.Text = "Abrir archivo (general)";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // SerialSelectorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(255, 222);
+            this.ClientSize = new System.Drawing.Size(255, 251);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.ws_button);
             this.Controls.Add(this.b_open);
             this.Controls.Add(this.tb_baudRate);
             this.Controls.Add(this.label2);
@@ -116,5 +141,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox tb_baudRate;
         private System.Windows.Forms.Button b_open;
+        private System.Windows.Forms.Button ws_button;
+        private System.Windows.Forms.Button button1;
     }
 }

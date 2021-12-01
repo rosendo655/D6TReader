@@ -47,6 +47,7 @@ namespace D6TReader.UserControls
         {
             InitializeComponent();
             panels = new DisplayPanel[1];
+            
             this.SizeChanged += ArrayPanelGroup_SizeChanged;
         }
 
@@ -120,7 +121,7 @@ namespace D6TReader.UserControls
             {
                 if (panels[i] == null) return;
                 panels[i].Width =
-                panels[i].Height = min_size;
+                panels[i].Height = min_size - 10;
             }
 
         }

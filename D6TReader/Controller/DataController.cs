@@ -22,16 +22,16 @@ namespace D6TReader.Controller
             return null;
         }
 
-        public static Stream OpenFile()
+        public static (Stream,string) OpenFile()
         {
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.DefaultExt = ".dat";
             var dialog_res = dialog.ShowDialog();
             if(dialog_res == DialogResult.OK)
             {
-                return dialog.OpenFile();
+                return (dialog.OpenFile(), dialog.FileName);
             }   
-            return null;
+            return default;
         }
     }
 }

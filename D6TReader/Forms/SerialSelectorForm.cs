@@ -64,11 +64,11 @@ namespace D6TReader.Forms
 
         private void Open()
         {
-            Stream file = DataController.OpenFile();
+            var file = DataController.OpenFile();
+            
+            if (file == default) return;
 
-            if (file == null) return;
-
-            FileReaderForm form = new FileReaderForm(file);
+            FileReaderForm form = new FileReaderForm(file.Item1,file.Item2);
 
             this.Visible = false;
 
@@ -81,6 +81,43 @@ namespace D6TReader.Forms
             };
         }
 
+        private void OpenOverall()
+        {
+            var file = DataController.OpenFile();
 
+            if (file == default) return;
+
+            FileOverallViewer form = new FileOverallViewer(file.Item1, file.Item2);
+
+            this.Visible = false;
+
+            form.Activate();
+            form.Visible = true;
+
+            form.FormClosed += (sen, ev) =>
+            {
+                this.Visible = true;
+            };
+        }
+
+        private void ws_button_Click(object sender, EventArgs e)
+        {
+            WSForm form = new WSForm();
+
+            this.Visible = false;
+
+            form.Activate();
+            form.Visible = true;
+
+            form.FormClosed += (sen, ev) =>
+            {
+                this.Visible = true;
+            };
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            OpenOverall();
+        }
     }
 }

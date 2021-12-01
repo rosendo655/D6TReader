@@ -37,6 +37,7 @@ namespace D6TReader.Forms
         {
             _reader = new Controller.D6TReader(port);
             _sequencer = new FrameSequencer(_reader, 18);
+            
             _analizer = new HeatMapAnalizer(16, 12,
                     new FrameAnalizeOptions(
                         standzones: new[] { new[] { 0, 4, 8 }, new[] { 1, 5, 9 }, new[] { 2, 6, 10 }, new[] { 3, 7, 11 } },
@@ -121,7 +122,7 @@ namespace D6TReader.Forms
 
         private async void Write(IEnumerable<float> temps)
         {
-            string toWrite = $"{DateTime.Now.Ticks}\t{string.Join("\t", temps)}\n";
+            string toWrite = $"{DateTime.Now}\t{string.Join("\t", temps)}\n";
             await _writer.WriteAsync(toWrite);
             await _writer.FlushAsync();
         }

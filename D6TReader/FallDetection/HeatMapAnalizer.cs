@@ -15,13 +15,13 @@ namespace D6TReader.FallDetection
         private FrameAnalizeOptions analizeOptions;
         private int CellCount { get; }
 
-        public float AvgTemp(int[] zone)
+        public float PromedioTemperaturaZona(int[] zone)
             => Calc(zone, cells => cells.Average(a => a.Current));
 
         public float SumTemp(int[] zone)
             => Calc(zone, cells => cells.Sum(s => s.Current));
 
-        public float AvgDelta(int[] zone)
+        public float PromedioDeltaZona(int[] zone)
             => Calc(zone, cells => cells.Average(a => a.TemperatureDelta));
 
         public float SumDelta(int[] zone)
@@ -111,13 +111,13 @@ namespace D6TReader.FallDetection
             float deltaThreshold = 0.4f
             )
         {
-            float allDeltaAvg = AvgDelta(allZone);
-            float standDeltaAvg = AvgDelta(startZone);
-            float fallDeltaAvg = AvgDelta(endZone);
+            float allDeltaAvg = PromedioDeltaZona(allZone);
+            float standDeltaAvg = PromedioDeltaZona(startZone);
+            float fallDeltaAvg = PromedioDeltaZona(endZone);
 
-            float allCurrentAvg = AvgTemp(allZone);
-            float fallCurrentAvg = AvgTemp(endZone);
-            float standCurrentAvg = AvgTemp(startZone);
+            float allCurrentAvg = PromedioTemperaturaZona(allZone);
+            float fallCurrentAvg = PromedioTemperaturaZona(endZone);
+            float standCurrentAvg = PromedioTemperaturaZona(startZone);
 
             FrameAnalizeResult result = FrameAnalizeResult.NONE;
 
@@ -171,6 +171,42 @@ namespace D6TReader.FallDetection
         }
 
 
+
+
+        private bool AnalizarCaida
+            (
+            int[] IZ,                               //ZONA INICIAL
+            int[] FZ,                               //ZONA FINAL
+            int[] RZ,                               //ZONA REFERENCIA
+            float HPT = 0.20f,                      //LIMITE PORCENTAJE TRANSFERENCIA CALOR
+            float AHT = 1.0f,                       //LIMITE PROMEDIO CALOR
+            float AHD = 0.4f                        //LIMITE DIFERENCIA PROMEDIO CALOR
+            )
+        {
+            //EN LOS METODOS 'PromedioDeltaZona()' y 'PromedioTemperaturaZona()' esta incluido el
+            //parametro W de tamaño de ventana, por eso no se encuentra en los parametroz de entrada
+
+            float RZDA = PromedioDeltaZona(RZ);                     //PROMEDIO DELTA ZONA REFERENCIA
+            float IZDA = PromedioDeltaZona(IZ);                     //PROMEDIO DELTA ZONA INICIAL
+            float FZDA = PromedioDeltaZona(FZ);                     //PROMEDIO DELTA ZONA FINAL
+
+            float RZA = PromedioTemperaturaZona(RZ);                //PROMEDIO TEMPERATURA ZONA REFERENCIA
+            float IZA = PromedioTemperaturaZona(IZ);                //PROMEDIO TEMPERATURA ZONA INICIAL
+            float FZA = PromedioTemperaturaZona(FZ);                //PROMEDIO TEMPERATURA ZONA FINAL
+
+            float HTP = IZDA / (FZDA == 0 ? 0.0001f : FZDA);        //PORCENTAJE DE TRANSFERENCIA DE CALOR
+            float AHTP = Math.Abs(HTP);                             //PORCENTAJE DE TRANSFERENCIA DE CALOR ABSOLUTO
+
+            return (IZA < (RZA + AHT) && (RZA + AHT) < FZA) &&      //CONDICION 1
+                   (IZDA <= (-AHD) && FZDA >= AHD) &&               //CONDICION 2
+                   (HTP < 0) &&                                     //CONDICION 3
+                   ((1.0f - HPT) <= AHTP && AHTP <= (1.0f + HPT));  //CONDICION 4
+        }
+
+
+
+
+
         //Algoritmo equivalente
         private bool AnalizarTransicion
             (
@@ -184,14 +220,14 @@ namespace D6TReader.FallDetection
         {
 
             //calculo de deltas promedio de zona
-            float deltaReferencia = AvgDelta(zonaReferencia);
-            float deltaInicio = AvgDelta(zonaInicio);
-            float deltaFinal = AvgDelta(zonaFinal);
+            float deltaReferencia = PromedioDeltaZona(zonaReferencia);
+            float deltaInicio = PromedioDeltaZona(zonaInicio);
+            float deltaFinal = PromedioDeltaZona(zonaFinal);
 
             //calculo de promedio de temperaturas de zona
-            float promedioReferencia = AvgTemp(zonaReferencia);
-            float promedioInicio = AvgTemp(zonaInicio);
-            float promedioFinal = AvgTemp(zonaFinal);
+            float promedioReferencia = PromedioTemperaturaZona(zonaReferencia);
+            float promedioInicio = PromedioTemperaturaZona(zonaInicio);
+            float promedioFinal = PromedioTemperaturaZona(zonaFinal);
 
             
             if (promedioInicio < (promedioReferencia + temperaturaMinima) && (promedioReferencia + temperaturaMinima) < promedioFinal)
